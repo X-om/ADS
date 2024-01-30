@@ -1,367 +1,195 @@
 #include<iostream>
+#include<cmath>
+#include<iomanip>
 using namespace std;
-#define MAX 20
-class treeNode{
+class poly{
     private:
-        char data;
-        treeNode * left;
-        treeNode * right;
+        int coefficient;
+        int exponent;
+        poly *  next;
+        friend class polynomial;
     public:
-        friend class tree;
+        poly();
+        
 };
-class stack{
-    private:
-        int top;
-        treeNode * data[MAX];
-    public:
-        friend class tree;
-        stack(){
-            top = -1;
-        }
-        void push(treeNode * temp){
-            if(isFull())
-                return;
-            
-            top++;
-            data[top] = temp;
-        }
-        treeNode * pop(){
-            if(isEmpty())
-                return nullptr;
-            
-            treeNode * res = data[top];
-            data[top] = nullptr;
-            top--;
-            return res;
-        }
-        bool isFull(){
-            if(top == MAX - 1)
-                return true;
-            
-            return false;
-        }
-        bool isEmpty(){
-            if(top == -1)
-                return true;
-            
-            return false;
-        }
-};
-class tree{
-    private:
-        treeNode * root;
-    public:
-        tree();
-        void create_r();
-        void create_r(treeNode * temp);
-        void inorder_r();
-        void inorder_r(treeNode * temp);
-        void preorder_r();
-        void preorder_r(treeNode * temp);
-        void postorder_r();
-        void postorder_r(treeNode * temp);
-        void create_nr();
-        void inorder_nr();
-        void preorder_nr();
-        void postorder_nr();
-};
-tree::tree(){
-    root = nullptr;
+poly :: poly(){
+    coefficient = 0;
+    exponent = 0;
+    next = nullptr;
 }
+class polynomial{
+    private:
+        poly * head;
+    public:
+        polynomial(){ head = nullptr; }
+        void create();
+        void display();
+        int length();
+        void Add(polynomial p1 , polynomial p2);
+        double evalueate();
 
-void tree :: create_r(){
-        root = new treeNode;
-        cout << "Enter the data for root node : ";
-        cin >> root->data;
-        create_r(root);
-}
-void tree :: create_r(treeNode * temp){
+};
+void polynomial :: create(){
     char choice;
-    cout << "Allocate node to left of " << temp->data << " (y/n) : ";
-    cin >> choice;
-    if(choice == 'y'){
-        treeNode * current = new treeNode;
-        cout << endl << "Enter the data for current node : ";
-        cin >> current->data;
-        cout << endl;
-        temp->left = current;
-        create_r(current);
-    }
-    cout << "Allocate node to right of " << temp->data << " (y/n) : ";
-    cin >> choice;
-    if(choice == 'y'){
-        treeNode * current =  new treeNode;
-        cout << endl << "Enter the data for current node : ";
-        cin >> current->data;
-        cout << endl;
-        temp->right = current;
-        create_r(current);
-    }
-}
-void tree :: inorder_r(){
-    if(root == nullptr){
-        cout << "No recursive tree exist !" << endl << endl;
-        return;
-    }
-    inorder_r(root);
-}
-void tree :: inorder_r(treeNode * temp){
-    if(temp!=nullptr){
-        inorder_r(temp->left);
-        cout << " -> " << temp->data;
-        inorder_r(temp->right);
-    }
-}
-void tree :: preorder_r(){
-    if(root == nullptr){
-        cout << "No recursive tree exist !" << endl << endl;
-        return;
-    }
-    preorder_r(root);
-}
-void tree :: preorder_r(treeNode * temp){
-    if(temp!=nullptr){
-        cout << " -> " << temp->data;
-        preorder_r(temp->left);
-        preorder_r(temp->right);
-    }
-}
-void tree :: postorder_r(){
-    if(root == nullptr){
-        cout << "No recursive tree exist !" << endl << endl;
-        return;
-    }
-    postorder_r(root);
-}
-void tree :: postorder_r(treeNode * temp){
-    if(temp!=nullptr){
-        postorder_r(temp->left);
-        postorder_r(temp->right);
-        cout << " -> " << temp->data;
-    }
-}
+    while(true){
+        poly * current = new poly;
+        cout << "Enter the coefficient : ";
+        cin >> current->coefficient;
+        cout << "Enter the exponent : ";
+        cin  >> current->exponent;
+        if(head == nullptr){
+            head = current;
+            head->next = head;
+        }
+        else{
+            poly * temp = head;
+            while (temp->next != head)
+                temp = temp->next;
 
-void tree :: create_nr(){
-    if(root == nullptr){
-        root = new treeNode;
-        cout << "Enter the data for root node : ";
-        cin >> root->data;
-    }
-    treeNode * temp;
-    int flag;
-    char choice;
-    do{
-        temp = root;
-        flag = 0;
-        treeNode * current = new treeNode;
-        cout << "Enter the data : ";
-        cin >> current->data;
-        while(flag == 0){   
-            cout << "Add To Left or right of " << temp->data << " (l/r) : ";
-            cin >> choice;
-            if(choice == 'l'){
-                if(temp->left == nullptr){
-                    temp->left = current;
-                    flag = 1;
-                }
-                temp = temp->left;
-            }
-            else{
-                if(choice == 'r'){
-                    if(temp->right == nullptr){
-                        temp->right = current;
-                        flag = 1;
-                    }
-                    temp = temp->right;
-                }
-            }       
+            temp->next = current;
+            current->next = head;
         }
         cout << "Press c to continue : ";
         cin >> choice;
         if(choice != 'c')
             break;
-
+        
         cout << endl;
-    }while(true);
-}
-void tree :: inorder_nr(){
-    if(root == nullptr)
-        return;
-    treeNode * temp = root;
-    stack * st = new stack;
-    while(true){
-        
-        while(temp != nullptr){
-            st->push(temp);
-            temp = temp->left;
-        }
-        if(st->isEmpty())
-            break;
-        
-        temp = st->pop();
-        cout << " -> " << temp->data;
-        temp = temp->right;
     }
-    delete st;
-    delete temp;
-    cout << endl;
 }
-void tree :: preorder_nr(){
-    if(root == nullptr)
-        return;
-    treeNode * temp = root;
-    stack * st = new stack;
-    while(true){
-        while(temp!=nullptr){
-            cout << " -> " << temp->data;
-            st->push(temp);
-            temp = temp->left;
-        }
-        if(st->isEmpty())
-            break;
-        
-        temp = st->pop();
-        temp = temp->right;
-    }
-    delete temp;
-    delete st;
-    cout << endl;
-}
-void tree :: postorder_nr(){
-    if(root == nullptr)
-        return;
-    treeNode * temp = root;
-    stack * st = new stack;
-    while(true){
-        while(temp!=nullptr){
-            st->push(temp);
-            temp = temp->left;
-        }
-        if(st->data[st->top]->right == nullptr){
-            temp = st->pop();
-            cout << " -> " << temp->data;
-        }
-        while(st->isEmpty() != true && st->data[st->top]->right == temp){
-            temp = st->pop();
-            cout << " -> " << temp->data;
-        }
-        if(st->isEmpty())
-            break;
-        
-        temp = st->data[st->top]->right;
-    }
-    delete st;
-    delete temp;
-    cout << endl;
-}
-
-
-
-int main(){
-    system("clear"); 
-    bool flag = true;
-    int choice;
+void polynomial :: display(){
+    poly * temp = head;
     do{
-        tree * bt = new tree;
-        cout << "1. create recursive binary tree" << endl << "2. create non recursive binary tree" 
-        << endl << "3.Exit" << endl;
-        cout << endl << "Enter your choice : ";
-        cin >> choice;
-        switch(choice){
-            case 1:{
-                system("clear");
-                cout << "\t\t\t**** Recursive Tree *****" << endl << endl;
-                int ch;
-                bool recursive_flag = true;
-                do{
-                    cout << "1.Create" << endl << "2.Inorder" << endl 
-                    << "3.Preorder" << endl << "4.Postorder" << endl 
-                    << "5.Exit" << endl;
-                    cout << endl << "Enter your choice : ";
-                    cin >> ch;
-                    switch (ch)
-                    {
-                    case 1:
-                        bt->create_r();
-                        cout << endl;
-                        break;
-                    case 2: 
-                        cout << "Inorder : ";
-                        bt->inorder_r();
-                        cout << endl << endl;
-                        break;
-                    case 3:
-                        cout << "Preorder : ";
-                        bt->preorder_r();
-                        cout << endl << endl;
-                        break;
-                    case 4:
-                        cout << "Postorder : ";
-                        bt->postorder_r();
-                        cout << endl << endl;
-                        break;
-                    case 5:
-                            delete bt;
-                            recursive_flag = false;
-                        break;
-                    default:
-                        cout << "Enter valid choice !" << endl << endl; 
-                        break;
-                    }
-                }while(recursive_flag);
-                break;
+        if(temp->exponent == 1)
+            cout << temp->coefficient << "X";
+        else if(temp->exponent == 0)
+            cout << temp->coefficient;
+        else
+            cout << temp->coefficient << "X^" << temp->exponent;
+
+        if(temp->next != head)
+            cout << " + ";
+
+        temp = temp->next;
+    }while (temp!=head);
+}
+int polynomial :: length(){
+    int count = 0;
+    if(head == nullptr)
+        return count;
+    
+    poly * temp = head;
+    do{
+        count++;
+        temp = temp->next;
+    }while(temp!=head);
+    return count;
+}
+void polynomial :: Add(polynomial p1 , polynomial p2){
+        int i = 0;
+        int j = 0;
+        poly * temp1 = p1.head;
+        poly * temp2 = p2.head;
+
+        while(i < p1.length() && j < p2.length()){
+            
+            poly * current = new poly;
+
+            if(temp1->exponent > temp2->exponent){
+                current->coefficient = temp1->coefficient;
+                current->exponent = temp1->exponent;
+                temp1 = temp1->next;
+                i++;
             }
-            case 2:{
-                system("clear");
-                cout << "\t\t\t**** NON Recursive Tree *****" << endl << endl;
-                int ch;
-                bool non_recursive_flag = true;
-                do{
-                    cout << "1.Create" << endl << "2.Inorder" << endl 
-                    << "3.Preorder" << endl << "4.Postorder" << endl 
-                    << "5.Exit" << endl;
-                    cout << endl << "Enter your choice : ";
-                    cin >> ch;
-                    switch (ch)
-                    {
-                    case 1:
-                        bt->create_nr();
-                        cout << endl;
-                        break;
-                    case 2: 
-                        cout << "Inorder : ";
-                        bt->inorder_nr();
-                        cout << endl << endl;
-                        break;
-                    case 3:
-                        cout << "Preorder : ";
-                        bt->preorder_nr();
-                        cout << endl << endl;
-                        break;
-                    case 4:
-                        cout << "Postorder : ";
-                        bt->postorder_nr();
-                        cout << endl << endl;
-                        break;
-                    case 5:
-                            non_recursive_flag = false;
-                        break;
-                    default:
-                        cout << "Enter valid choice !" << endl << endl; 
-                        break;
-                    }
-                }while(non_recursive_flag);
-                break;
+            else if(temp1->exponent < temp2->exponent){    
+                current->coefficient = temp2->coefficient;
+                current->exponent = temp2->exponent;
+                temp2 = temp2->next;
+                j++;
             }
-            case 3:
-                delete bt;
-                flag = false;
-                break;
-            default:
-                cout << "Enter the valid choice !" << endl;
-                break;
+            else if(temp1->exponent == temp2->exponent){
+                current->coefficient = temp1->coefficient + temp2->coefficient;
+                current->exponent = temp1->exponent;
+                temp1 = temp1->next;
+                temp2 = temp2->next;
+                i++;
+                j++;
+            }
+            if(head == nullptr){
+                head = current;
+                current->next = head;
+            }
+            else{
+                poly * temp = head;
+                while(temp->next != head)
+                    temp = temp->next;
+                
+                temp->next = current;
+                current->next = head;
+            }
         }
-    }while(flag);
 
-
+        for(; i < p1.length(); i++){
+            poly * current = new poly;
+            current->coefficient = temp1->coefficient;
+            current->exponent = temp1->exponent;
+            poly * temp = head;
+            while (temp->next != head)
+                temp = temp->next;
+            
+            temp->next = current;
+            current->next = head;
+        }
+         for(; j < p2.length(); j++){
+            poly * current = new poly;
+            current->coefficient = temp2->coefficient;
+            current->exponent = temp2->exponent;
+            poly * temp = head;
+            while (temp->next != head)
+                temp = temp->next;
+            
+            temp->next = current;
+            current->next = head;
+        }
+}
+double polynomial :: evalueate(){
+    if(head == nullptr){
+        cout << "Enter the polynomial first" << endl << endl;
+        return -1;
+    }
+    double x;
+    cout << "Enter the value of X : ";
+    cin >> x;
+    poly * temp = head;
+    double sum = 0;
+    do{
+        sum += temp->coefficient * pow(x,temp->exponent);
+        temp = temp->next;
+    
+    }while (temp!=head);
+    
+    return sum;
+    
+}
+int main(){
+    system("clear");
+    polynomial p1 , p2 , p3;
+    p1.create();
+    cout << endl;
+    p1.display();
+    cout << endl << endl;
+    p2.create();
+    cout << endl;
+    p2.display();
+    cout << endl;
+    p3.Add(p1,p2);
+    cout << endl << "Addition of p1 and p2 is : " << endl;
+    p3.display();
+    cout << endl << endl;
+    cout << "Length of p1 is : " << p1.length() << endl << endl;
+    cout << "Length of p2 is : " << p2.length() << endl << endl;
+    cout << "Length of p3 is : " << p3.length() << endl << endl;
+    setprecision(2);
+    cout << "Evaluation of p3 with x = 2.5 is : " << endl << p3.evalueate() << endl;
+    return 0;
 }
